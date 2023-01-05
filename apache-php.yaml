@@ -13,7 +13,7 @@
         state: present
     - name: inserting info.php
       ansible.builtin.copy:
-        src: /var/www/html/info.php
+        src: ./php.txt
         dest: /var/www/html/info.php
 
 
