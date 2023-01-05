@@ -1,7 +1,7 @@
 * Step by Step to Install & Configure WildFly (JBoss) on Ubuntu 22.04:
 -----------------------------------------------------------------------
 * Documentation link
-  [Refer here: https://www.hackerxone.com/2021/09/01/step-by-step-to-install-configure-wildfly-jboss-on-ubuntu-20-04/#:~:text=Step%20by%20Step%20to%20Install%20%26%20Configure%20WildFly,the%20following%20port%20number%20on%20UFW%20firewall.%20]
+  [Refer here](https://www.hackerxone.com/2021/09/01/step-by-step-to-install-configure-wildfly-jboss-on-ubuntu-20-04/#:~:text=Step%20by%20Step%20to%20Install%20%26%20Configure%20WildFly,the%20following%20port%20number%20on%20UFW%20firewall.%20)
 * Step 1: Update the system. `sudo apt update`
 * Step 2: Install Java. `sudo apt install openjdk-11-jdk -y`
 * Step 3: Add a user & group for wildfly.
