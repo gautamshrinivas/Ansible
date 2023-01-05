@@ -24,6 +24,7 @@
   * Check the status of WildFly. `sudo systemctl status wildfly.service`
 
 #Wildfly.yaml file
+---------------------
 
 ```yaml
 ---
