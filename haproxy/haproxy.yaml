@@ -1,0 +1,55 @@
+# Manual steps for installing ha-proxy in ubuntu 20.04:
+#------------------------------------------------------
+    # 1  sudo apt update && sudo apt upgrade -y
+    # 2  sudo apt install software-properties-common
+    # 3  sudo add-apt-repository ppa:vbernat/haproxy-2.6 -y
+    # 4  sudo apt update && sudo apt install haproxy -y
+    # 5  sudo systemctl status haproxy
+    # 6  sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg-org
+    # 7  sudo vi /etc/haproxy/haproxy.cfg
+    # 8  sudo systemctl restart haproxy
+# ------------------------------------------------------------------------
+
+---
+- name: Installing Ha-Proxy in ubuntu
+  become: yes
+  hosts: all
+  tasks:
+    - name: Updating packages 
+      ansible.builtin.apt:
+        name: software-properties-common
+        update_cache: yes
+        state: present
+    - name: Downloading 'ppa:vbernat/haproxy-2.6'
+      ansible.builtin.apt_repository: 
+        repo: ppa:vbernat/haproxy-2.6
+        state: present 
+    - name: Installing haproxy
+      ansible.builtin.apt:
+        name: haproxy
+        update_cache: yes
+        state: present
+    - name: Copying 'haproxy.cfg' configuration file for backup
+      ansible.builtin.copy:
+        src: /etc/haproxy/haproxy.cfg
+        dest: /etc/haproxy/haproxy.cfg-org
+        remote_src: yes    
+      notify:
+        - Restarting haproxy
+    - name: Adding nodes
+      ansible.builtin.copy:
+        src: /home/ansible/haproxy.config
+        dest: /etc/haproxy/haproxy.cfg
+      notify:
+        - Restarting haproxy  
+    - name: Using debug
+      ansible.builtin.debug:
+        msg: Restarting haproxy service
+  handlers:      
+    - name: Restarting haproxy
+      ansible.builtin.systemd:
+        name: haproxy
+        daemon_reload: yes
+        enabled: yes
+        state: restarted
+      
