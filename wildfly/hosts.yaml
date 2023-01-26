@@ -1,0 +1,10 @@
+---
+all:
+  children:
+    webserver:
+      hosts:
+        172.31.82.74:
+          java_package: openjdk-11-jdk
+        
+
+          

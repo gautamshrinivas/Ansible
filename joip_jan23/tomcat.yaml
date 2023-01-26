@@ -1,0 +1,131 @@
+---
+- name: installing tomcat 9/10/11
+  hosts: all
+  become: yes
+  vars:
+    tomcat_version: 10.1.5
+    tomcat_user_name: tomcat
+    tomcat_group_name: tomcat
+    tomcat_home_directory: /opt/tomcat
+    tomcat_shell: /bin/false
+    tomcat_tar_file_url: 
+  tasks:
+    - name: using debug
+      ansible.builtin.debug:
+        msg: Installing java package
+    - name: Installing java    
+      ansible.builtin.apt:
+        name: openjdk-11-jdk
+        state: present  
+
+    - name: using debug
+      ansible.builtin.debug:
+        msg: Create the group 
+    - name: Creating the tomcat group 
+      ansible.builtin.group:
+        name: "{{ tomcat_group_name }}"
+        state: present 
+        system: yes 
+
+    - name: using debug
+      ansible.builtin.debug:
+        msg: Create the user and add to group
+    - name:  Creating the user   
+      ansible.builtin.user:
+        name: "{{ tomcat_user_name }}"
+        group: "{{ tomcat_group_name }}"
+        home: "{{ tomcat_home_directory }}"
+        shell: "{{ tomcat_shell }}"
+        state: present
+        system: yes     
+
+    - name: using debug
+      ansible.builtin.debug:
+        msg: Download the tomcat url
+    - name: Downloading the tomcat url    
+      ansible.builtin.get_url:
+        url: "https://www-eu.apache.org/dist/tomcat/tomcat-10/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: /tmp/   
+
+    - name: using debug
+      ansible.builtin.debug:
+        msg: untar the tomcat tar file in /opt/tomcat/ 
+    - name: untar the tomcat tar file    
+      ansible.builtin.unarchive:
+        src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: "{{ tomcat_home_directory }}"
+        remote_src: yes
+    - name: using debug
+      ansible.builtin.debug:
+        msg: creating symbolic link for control over versions
+    - name: creating symbolic link    
+      ansible.builtin.file:
+        src: "/opt/tomcat/apache-tomcat-{{ tomcat_version }}"
+        dest: /opt/tomcat/latest
+        owner: "{{ tomcat_user_name }}"
+        group: "{{ tomcat_group_name }}"
+        state: link
+
+    - name: using debug
+      ansible.builtin.debug:
+        msg: changing the directory ownership to user and group tomcat
+    - name: given ownership permission
+      ansible.builtin.file:
+        path: "{{ tomcat_home_directory }}"
+        owner: "{{ tomcat_user_name }}"
+        group: "{{ tomcat_group_name }}"
+        mode: "+x"
+        recurse: yes
+        state: directory
+
+    - name: using debug
+      ansible.builtin.debug:
+        msg: giving executable permissions to .sh files  
+    - name: give executable permissions
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: 'a+x'
+      with_fileglob:
+        - "{{ tomcat_home_directory }}/latest/bin/*.sh" 
+
+    - name: using debug
+      ansible.builtin.debug:
+        msg: copy tomcat service file 
+    - name: copying tomcat service files
+      ansible.builtin.copy:
+        src: tomcat.service  
+        dest: /etc/systemd/system/tomcat.service
+
+    - name: daemon reload 
+      ansible.builtin.systemd:
+        name: tomcat
+        state: started    
+        daemon_reload: yes
+        enabled: yes
+
+    - name: creating users
+      ansible.builtin.copy:
+        src: tomcat-users.xml  
+        dest: /opt/tomcat/latest/conf/tomcat-users.xml
+
+    - name: copy the file for manager app    
+      ansible.builtin.copy:
+        src: context-manager.xml  
+        dest: /opt/tomcat/latest/webapps/manager/META-INF/context.xml 
+
+    - name: copy the file for host manager app    
+      ansible.builtin.copy:
+        src: context-host-manager.xml  
+        dest: /opt/tomcat/latest/webapps/manager/META-INF/context.xml  
+
+    - name: daemon reload 
+      ansible.builtin.systemd:
+        name: tomcat
+        state: restarted    
+        daemon_reload: yes
+        enabled: yes
+
+
+
+
+

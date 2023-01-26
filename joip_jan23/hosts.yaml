@@ -1,0 +1,8 @@
+all:
+  children:
+    webserver:
+      hosts:
+        172.31.82.74:
+          #java_version: openjdk-11-jdk
+          dotnet_version: dotnet-sdk-6.0
+

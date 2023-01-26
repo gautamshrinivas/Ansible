@@ -1,0 +1,10 @@
+---
+- name: installing open-jdk-11/13/17 on ubuntu 22.04
+  hosts: all
+  become: yes
+  tasks:
+    - name: installing java 
+      ansible.builtin.apt:
+        name: "{{ java_version }}"
+        update_cache: true
+        state: present

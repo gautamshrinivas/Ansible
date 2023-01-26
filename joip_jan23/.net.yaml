@@ -1,0 +1,10 @@
+---
+- name: installing .net-core on ubuntu 22.04
+  hosts: all
+  become: yes
+  tasks:
+    - name: installing .net-core
+      ansible.builtin.apt:
+        name: "{{ dotnet_version }}"
+        update_cache: true
+        state: present

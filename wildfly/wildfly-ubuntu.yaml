@@ -83,13 +83,13 @@
         dest: /etc/systemd/system/
         remote_src: true
 
-    - name: starting wildfly service
+    - name: restarting wildfly service
       ansible.builtin.systemd:
         name: wildfly.service
         state: restarted
         enabled: yes
         
-    - name: restarting wildfly service
+    - name: starting wildfly service
       ansible.builtin.service:
         name: wildfly.service
         state: started

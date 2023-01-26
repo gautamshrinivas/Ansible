@@ -1,0 +1,28 @@
+---
+- name: installing wildfly in ubuntu 22.04
+  hosts: all
+  become: true
+  vars: 
+
+  tasks:
+    - name: installing java
+
+
+
+
+
+
+
+- name: create a system account for wildfly user
+
+    - name: download wildfly tar file
+        - name: untaring the tar file
+            - name: copy file with owner and permissions
+               - name: changing ownership of wildfly
+                   - name: Create /etc/wildfly directory 
+                       - name: copying files to /etc/wildfly
+                           - name: copying files to /opt/wildfly/bin/
+                               - name: Execute the command in remote shell
+                                   - name: copying files to /opt/wildfly/bin/
+                                       - name: restarting wildfly service
+                                           - name: starting wildfly service
