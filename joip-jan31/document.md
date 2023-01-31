@@ -24,7 +24,6 @@
     sudo add-apt-repository --yes --update ppa:ansible/ansible
     sudo apt install ansible -y
     ansible --version
-
     ```  
 * Create a hosts file and by giving following details
     ```
@@ -118,7 +117,10 @@ pipeline {
 * Push all the files to your github and go to jenkins 
 * Apply the declarative pipleline as shown below
 ![Preview](images/Capture19.JPG)
-*Apply build
+* Apply build
 ![Preview](images/Capture20.JPG)
-* Output
+* Build was success as shown below
 ![Preview](images/Capture21.JPG)
+* Check the output page of apache2 by giving publicip:80
+![Preview](images/Capture22.JPG)
+
