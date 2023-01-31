@@ -10,27 +10,18 @@
     tomcat_shell: /bin/false
     tomcat_tar_file_url: 
   tasks:
-    - name: using debug
-      ansible.builtin.debug:
-        msg: Installing java package
     - name: Installing java    
       ansible.builtin.apt:
         name: openjdk-11-jdk
         state: present  
 
-    - name: using debug
-      ansible.builtin.debug:
-        msg: Create the group 
     - name: Creating the tomcat group 
       ansible.builtin.group:
         name: "{{ tomcat_group_name }}"
         state: present 
         system: yes 
 
-    - name: using debug
-      ansible.builtin.debug:
-        msg: Create the user and add to group
-    - name:  Creating the user   
+    - name:  Creating the user and add to group  
       ansible.builtin.user:
         name: "{{ tomcat_user_name }}"
         group: "{{ tomcat_group_name }}"
@@ -39,37 +30,26 @@
         state: present
         system: yes     
 
-    - name: using debug
-      ansible.builtin.debug:
-        msg: Download the tomcat url
     - name: Downloading the tomcat url    
       ansible.builtin.get_url:
         url: "https://www-eu.apache.org/dist/tomcat/tomcat-10/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
         dest: /tmp/   
 
-    - name: using debug
-      ansible.builtin.debug:
-        msg: untar the tomcat tar file in /opt/tomcat/ 
-    - name: untar the tomcat tar file    
+    - name: untar the tomcat tar file in /opt/tomcat/    
       ansible.builtin.unarchive:
         src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
         dest: "{{ tomcat_home_directory }}"
         remote_src: yes
-    - name: using debug
-      ansible.builtin.debug:
-        msg: creating symbolic link for control over versions
-    - name: creating symbolic link    
+
+    - name: creating symbolic link for control over versions   
       ansible.builtin.file:
-        src: "/opt/tomcat/apache-tomcat-{{ tomcat_version }}"
-        dest: /opt/tomcat/latest
+        src: "{{ tomcat_home_directory }}t/apache-tomcat-{{ tomcat_version }}"
+        dest: "{{ tomcat_home_directory }}/latest"
         owner: "{{ tomcat_user_name }}"
         group: "{{ tomcat_group_name }}"
         state: link
 
-    - name: using debug
-      ansible.builtin.debug:
-        msg: changing the directory ownership to user and group tomcat
-    - name: given ownership permission
+    - name: given ownership permission to user and group tomcat
       ansible.builtin.file:
         path: "{{ tomcat_home_directory }}"
         owner: "{{ tomcat_user_name }}"
@@ -77,47 +57,39 @@
         mode: "+x"
         recurse: yes
         state: directory
-
-    - name: using debug
-      ansible.builtin.debug:
-        msg: giving executable permissions to .sh files  
-    - name: give executable permissions
+  
+    - name: give executable permissions to .sh files
       ansible.builtin.file:
         path: "{{ item }}"
         mode: 'a+x'
       with_fileglob:
         - "{{ tomcat_home_directory }}/latest/bin/*.sh" 
-
-    - name: using debug
-      ansible.builtin.debug:
-        msg: copy tomcat service file 
+ 
     - name: copying tomcat service files
       ansible.builtin.copy:
         src: tomcat.service  
         dest: /etc/systemd/system/tomcat.service
-
-    - name: daemon reload 
-      ansible.builtin.systemd:
-        name: tomcat
-        state: started    
-        daemon_reload: yes
-        enabled: yes
+      notify: 
+        - daemon reload  
 
     - name: creating users
       ansible.builtin.copy:
         src: tomcat-users.xml  
-        dest: /opt/tomcat/latest/conf/tomcat-users.xml
+        dest: "{{ tomcat_home_directory }}/latest/conf/tomcat-users.xml"
 
-    - name: copy the file for manager app    
+    - name: copy the context file 
       ansible.builtin.copy:
-        src: context-manager.xml  
-        dest: /opt/tomcat/latest/webapps/manager/META-INF/context.xml 
+        src: context.xml  
+        dest: "{{ item  }}"
+        owner: "{{ tomcat_user_name }}"
+        group: "{{ tomcat_group_name }}"
+      loop:
+        - "{{ tomcat_home_directory }}/webapps/manager/META-INF/context.xml"
+        - "{{ tomcat_home_directory }}/latest/webapps/manager/META-INF/context.xml"
+      notify:
+        - daemon_reload
 
-    - name: copy the file for host manager app    
-      ansible.builtin.copy:
-        src: context-host-manager.xml  
-        dest: /opt/tomcat/latest/webapps/manager/META-INF/context.xml  
-
+  handlers:
     - name: daemon reload 
       ansible.builtin.systemd:
         name: tomcat

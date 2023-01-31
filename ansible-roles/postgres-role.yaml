@@ -1,0 +1,9 @@
+---
+- name: installing postgress on ubuntu 22.04
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - role: buluma.postgres
+      postgres_port: 6543

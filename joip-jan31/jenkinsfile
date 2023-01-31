@@ -1,0 +1,16 @@
+pipeline {
+    agent { label 'default'}
+    stages {
+        stage ('vcs') {
+            steps {
+                git url: "https://github.com/gautamshrinivas/Ansible.git",
+                branch: "main"
+            }
+        }
+        stage ('apply the playbook') {
+            steps {
+                sh 'ansible-playbook -i hosts.yaml apache-php.yaml'
+            }
+        }
+    }
+}

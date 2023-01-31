@@ -1,0 +1,7 @@
+all:
+  children:
+    webserver:
+      hosts:
+        172.31.82.74:
+          apache_package: apache2
+          php_package: php
