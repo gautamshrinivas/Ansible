@@ -123,4 +123,7 @@ pipeline {
 ![Preview](images/Capture21.JPG)
 * Check the output page of apache2 by giving publicip:80
 ![Preview](images/Capture22.JPG)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 03ff6622bf536fc982dc250cda3b77591626cccb
