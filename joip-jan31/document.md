@@ -13,13 +13,75 @@ sudo apt-get update
 sudo apt-get install jenkins
 ```
 * Give the administrator password by looking into the following path 
-![{/image/Capture5.jpg}]
+![Preview](images/Capture5.JPG)
 ```
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 * Then go to installed plugins
+![Preview](images/Capture6.JPG)
+![Preview](images/Capture7.JPG)
 * Give the required username password for jenkins login
+![Preview](images/Capture8.JPG)
 * You will ge the below page as output
-* Create a node with ansible and java installed in it
+![Preview](images/Capture9.JPG)
+* Create a node with ansible and java installed in it.
 * Go to manage node give the name of the node and give the required information as shown below
+![Preview](images/Capture10.JPG)
+![Preview](images/Capture11.JPG)
+![Preview](images/Capture12.JPG)
+![Preview](images/Capture13.JPG)
+![Preview](images/Capture14.JPG)
+![Preview](images/Capture15.JPG)
+![Preview](images/Capture16.JPG)
+![Preview](images/Capture17.JPG)
 * Connect the node via username and password of the instance which you want to connect via jenkins master
+* Create the project 
+![Preview](images/Capture18.JPG)
+* Write a play book for installing apache2 as show below
+```yaml
+- name: installing apache and php on ubuntu 22.04
+  hosts: all
+  become: yes
+  vars: 
+    apache_package: apache2
+  tasks:
+    - name: install apache
+      ansible.builtin.apt:
+        name: "{{ apache_package }}"
+        state: present
+```
+* Write the hosts file as shown below
+```yaml
+all:
+  children:
+    webserver:
+      hosts:
+        172.31.82.74:
+          apache_package: apache2
+```
+* Write the jenkins file as shown below
+```yaml
+pipeline {
+    agent { label 'default'}
+    stages {
+        stage ('vcs') {
+            steps {
+                git url: "https://github.com/gautamshrinivas/Ansible.git",
+                branch: "main"
+            }
+        }
+        stage ('apply the playbook') {
+            steps {
+                sh 'ansible-playbook -i joip-jan31/hosts.yaml joip-jan31/apache-php.yaml'
+            }
+        }
+    }
+}
+```
+* Push all the files to your github and go to jenkins 
+* Apply the declarative pipleline as shown below
+![Preview](images/Capture19.JPG)
+*Apply build
+![Preview](images/Capture20.JPG)
+* Output
+![Preview](images/Capture21.JPG)
