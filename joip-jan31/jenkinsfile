@@ -9,7 +9,7 @@ pipeline {
         }
         stage ('apply the playbook') {
             steps {
-                sh 'ansible-playbook -i hosts.yaml apache-php.yaml'
+                sh 'ansible-playbook -i joip-jan31/hosts.yaml joip-jan31/apache-php.yaml'
             }
         }
     }
