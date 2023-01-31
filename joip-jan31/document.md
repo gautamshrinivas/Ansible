@@ -118,7 +118,7 @@ pipeline {
 * Push all the files to your github and go to jenkins 
 * Apply the declarative pipleline as shown below
 ![Preview](images/Capture19.JPG)
-*Apply build
+* Apply build
 ![Preview](images/Capture20.JPG)
 * Output
 ![Preview](images/Capture21.JPG)
